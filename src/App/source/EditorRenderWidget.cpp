@@ -17,6 +17,8 @@
 #include <ImGuizmo.h>
 #include <Function/Scene/Light.h>
 #include <glm/gtc/type_ptr.hpp>
+
+#include <NavMesh/NavMeshSample.h>
 namespace Stone
 {
 	EditorRendererWidget::EditorRendererWidget(QWidget* parent)
@@ -31,6 +33,7 @@ namespace Stone
         PublicSingleton<Engine>::getInstance().renderInitialize();
         PublicSingleton<Engine>::getInstance().logicalInitialize();
         QtImGui::initialize(this);
+        PublicSingletonInstance(NavMeshSample).handelBuild();
 	}
 
 	void EditorRendererWidget::resizeGL(int w, int h)

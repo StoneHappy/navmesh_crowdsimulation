@@ -27,6 +27,7 @@ target_link_libraries(${TARGET_NAME}
           ads::qtadvanceddocking
           qt_imgui_widgets
           imguizmo
+          ${PROJECT_NAME}Runtime
 )
 
 target_include_directories(
