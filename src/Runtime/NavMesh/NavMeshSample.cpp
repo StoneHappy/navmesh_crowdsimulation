@@ -7,12 +7,75 @@ namespace Stone
 	{
 		m_ctx = new BuildContext();
 	}
-	void NavMeshSample::handelBuild()
+	void NavMeshSample::attachMesh(NavGeoMesh* mesh)
 	{
+		m_Mesh = mesh;
+	}
+	bool NavMeshSample::handelBuild()
+	{
+		if (m_Mesh == nullptr) return false;
+
+		const float* bmin = m_Mesh->getBoundsMin();
+		const float* bmax = m_Mesh->getBoundsMax();
+		const float* verts = m_Mesh->getVerts();
+		const int nverts = m_Mesh->getVertCount();
+		const int* tris = m_Mesh->getTris();
+		const int ntris = m_Mesh->getTriCount();
+
+		//
+		// Step 1. Initialize build config.
+		//
+
+		// Init build configuration from GUI
+		memset(&m_cfg, 0, sizeof(m_cfg));
+		m_cfg.cs = m_cellSize;
+		m_cfg.ch = m_cellHeight;
+		m_cfg.walkableSlopeAngle = m_agentMaxSlope;
+		m_cfg.walkableHeight = (int)ceilf(m_agentHeight / m_cfg.ch);
+		m_cfg.walkableClimb = (int)floorf(m_agentMaxClimb / m_cfg.ch);
+		m_cfg.walkableRadius = (int)ceilf(m_agentRadius / m_cfg.cs);
+		m_cfg.maxEdgeLen = (int)(m_edgeMaxLen / m_cellSize);
+		m_cfg.maxSimplificationError = m_edgeMaxError;
+		m_cfg.minRegionArea = (int)rcSqr(m_regionMinSize);		// Note: area = size*size
+		m_cfg.mergeRegionArea = (int)rcSqr(m_regionMergeSize);	// Note: area = size*size
+		m_cfg.maxVertsPerPoly = (int)m_vertsPerPoly;
+		m_cfg.detailSampleDist = m_detailSampleDist < 0.9f ? 0 : m_cellSize * m_detailSampleDist;
+		m_cfg.detailSampleMaxError = m_cellHeight * m_detailSampleMaxError;
+
+		// Set the area where the navigation will be build.
+		// Here the bounds of the input mesh are used, but the
+		// area could be specified by an user defined box, etc.
+		rcVcopy(m_cfg.bmin, bmin);
+		rcVcopy(m_cfg.bmax, bmax);
+		rcCalcGridSize(m_cfg.bmin, m_cfg.bmax, m_cfg.cs, &m_cfg.width, &m_cfg.height);
+
+		// Reset build times gathering.
+		m_ctx->resetTimers();
+
+		// Start the build process.	
+		m_ctx->startTimer(RC_TIMER_TOTAL);
+
+		m_ctx->log(RC_LOG_PROGRESS, "Building navigation:");
+		m_ctx->log(RC_LOG_PROGRESS, " - %d x %d cells", m_cfg.width, m_cfg.height);
+		m_ctx->log(RC_LOG_PROGRESS, " - %.1fK verts, %.1fK tris", nverts / 1000.0f, ntris / 1000.0f);
+
+		//
+		// Step 2. Rasterize input polygon soup.
+		//
+
+		// Allocate voxel heightfield where we rasterize our input data to.
 		m_solid = rcAllocHeightfield();
-		glm::vec3 min = glm::vec3(0);
-		glm::vec3 max = {100, 100, 100};
-		ASSERT(m_solid, "buildNavigation: Out of memory 'solid'.");
-		ASSERT(rcCreateHeightfield(m_ctx, *m_solid, 100, 100, (float*)&min,(float*)&max, 10, 10), "buildNavigation: Could not create solid heightfield.");
+		if (!m_solid)
+		{
+			m_ctx->log(RC_LOG_ERROR, "buildNavigation: Out of memory 'solid'.");
+			return false;
+		}
+		if (!rcCreateHeightfield(m_ctx, *m_solid, m_cfg.width, m_cfg.height, m_cfg.bmin, m_cfg.bmax, m_cfg.cs, m_cfg.ch))
+		{
+			m_ctx->log(RC_LOG_ERROR, "buildNavigation: Could not create solid heightfield.");
+			return false;
+		}
+
+		return true;
 	}
 }

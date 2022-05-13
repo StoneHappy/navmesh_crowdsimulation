@@ -19,6 +19,7 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include <NavMesh/NavMeshSample.h>
+#include <NavMesh/NavGeoMesh.h>
 namespace Stone
 {
 	EditorRendererWidget::EditorRendererWidget(QWidget* parent)
@@ -33,6 +34,9 @@ namespace Stone
         PublicSingleton<Engine>::getInstance().renderInitialize();
         PublicSingleton<Engine>::getInstance().logicalInitialize();
         QtImGui::initialize(this);
+        PublicSingletonInstance(NavMeshSample).handelBuild();
+        NavGeoMesh* navgeo = new NavGeoMesh("D:/datas/obj/dungeon.obj");
+        PublicSingletonInstance(NavMeshSample).attachMesh(navgeo);
         PublicSingletonInstance(NavMeshSample).handelBuild();
 	}
 
