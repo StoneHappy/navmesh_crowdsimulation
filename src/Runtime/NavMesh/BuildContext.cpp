@@ -4,7 +4,7 @@ namespace Stone
 {
 	void BuildContext::doLog(const rcLogCategory logcategory, const char* msg, const int len)
 	{
-		if (len == 0)return;
+		if (!len)return;
 		switch (logcategory)
 		{
 		case RC_LOG_PROGRESS:
