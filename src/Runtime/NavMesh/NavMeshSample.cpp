@@ -76,6 +76,27 @@ namespace Stone
 			return false;
 		}
 
+		// Allocate array that can hold triangle area types.
+		// If you have multiple meshes you need to process, allocate
+		// and array which can hold the max number of triangles you need to process.
+		m_triareas = new unsigned char[ntris];
+		if (!m_triareas)
+		{
+			m_ctx->log(RC_LOG_ERROR, "buildNavigation: Out of memory 'm_triareas' (%d).", ntris);
+			return false;
+		}
+
+		// Find triangles which are walkable based on their slope and rasterize them.
+		// If your input data is multiple meshes, you can transform them here, calculate
+		// the are type for each of the meshes and rasterize them.
+		memset(m_triareas, 0, ntris * sizeof(unsigned char));
+		rcMarkWalkableTriangles(m_ctx, m_cfg.walkableSlopeAngle, verts, nverts, tris, ntris, m_triareas);
+		if (!rcRasterizeTriangles(m_ctx, verts, nverts, tris, m_triareas, ntris, *m_solid, m_cfg.walkableClimb))
+		{
+			m_ctx->log(RC_LOG_ERROR, "buildNavigation: Could not rasterize triangles.");
+			return false;
+		}
+
 		return true;
 	}
 }

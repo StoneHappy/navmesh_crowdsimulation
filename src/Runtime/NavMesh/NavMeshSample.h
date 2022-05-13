@@ -22,6 +22,7 @@ namespace Stone
 		rcHeightfield* m_solid;
 		BuildContext* m_ctx;
 		rcConfig m_cfg;
+		unsigned char* m_triareas;
 
 		float m_cellSize = 0.3;
 		float m_cellHeight = 0.2;
