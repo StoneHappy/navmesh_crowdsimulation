@@ -22,7 +22,7 @@ namespace Stone
 	private:
 		void spansToScene();
 
-		void addSpanBox(glm::vec3 position, size_t cs, int min, int max);
+		void addSpanBox(glm::vec3 position, float cs, float min, float max);
 
 		NavGeoMesh* m_Mesh = nullptr;
 		rcHeightfield* m_solid;

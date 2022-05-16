@@ -35,7 +35,7 @@ namespace Stone
         PublicSingleton<Engine>::getInstance().logicalInitialize();
         QtImGui::initialize(this);
         PublicSingletonInstance(NavMeshSample).handelBuild();
-        NavGeoMesh* navgeo = new NavGeoMesh("D:/datas/obj/plane.obj");
+        NavGeoMesh* navgeo = new NavGeoMesh("D:/datas/obj/cube.obj");
         PublicSingletonInstance(NavMeshSample).attachMesh(navgeo);
         PublicSingletonInstance(NavMeshSample).handelBuild();
 	}

@@ -109,24 +109,27 @@ namespace Stone
 
 		spansToScene();
 
-		addSpanBox({ 0, 0,0 }, 10, 0, 10);
-
 		return true;
 	}
 	void NavMeshSample::spansToScene()
 	{
-		int spancount = 0;
 		for (size_t i = 0; i < m_cfg.width; i++)
 		{
 			for (size_t j = 0; j < m_cfg.height; j++)
 			{
-				spancount++;
+				int idx = i + j * m_cfg.width;
+				if (!m_solid->spans[idx]) continue;
+				addSpanBox({ m_cfg.bmin[0] + i * m_cfg.cs,  m_cfg.bmin[1], m_cfg.bmin[2] + j * m_cfg.cs }, m_cfg.cs, m_solid->spans[idx]->smin * m_cfg.ch, m_solid->spans[idx]->smax * m_cfg.ch);
+				rcSpan* next = m_solid->spans[idx]->next;
+				while (next)
+				{
+					addSpanBox({ m_solid->bmin[0] + i * m_cfg.cs, m_cfg.bmin[1], m_solid->bmin[2] + j * m_cfg.cs }, m_cfg.cs, next->smin * m_cfg.ch, next->smax * m_cfg.ch);
+					next = next->next;
+				}
 			}
 		}
-
-		LOG_DEBUG("spancount: {0}", spancount);
 	}
-	void NavMeshSample::addSpanBox(glm::vec3 position, size_t cs, int min, int max)
+	void NavMeshSample::addSpanBox(glm::vec3 position, float cs, float min, float max)
 	{
 		int height = max - min;
 		auto span = PublicSingleton<Scene>::getInstance().CreateObject("span");
