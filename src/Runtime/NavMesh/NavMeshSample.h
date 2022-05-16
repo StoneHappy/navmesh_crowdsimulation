@@ -16,7 +16,9 @@ namespace Stone
 
 		void attachMesh(NavGeoMesh* mesh);
 		bool handelBuild();
+
 	private:
+		void spansToScene();
 
 		NavGeoMesh* m_Mesh = nullptr;
 		rcHeightfield* m_solid;

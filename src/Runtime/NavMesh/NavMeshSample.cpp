@@ -49,6 +49,7 @@ namespace Stone
 		rcVcopy(m_cfg.bmax, bmax);
 		rcCalcGridSize(m_cfg.bmin, m_cfg.bmax, m_cfg.cs, &m_cfg.width, &m_cfg.height);
 
+		LOG_DEBUG("width: {0}", m_cfg.width, m_cfg.height);
 		// Reset build times gathering.
 		m_ctx->resetTimers();
 
@@ -57,7 +58,8 @@ namespace Stone
 
 		m_ctx->log(RC_LOG_PROGRESS, "Building navigation:");
 		m_ctx->log(RC_LOG_PROGRESS, " - %d x %d cells", m_cfg.width, m_cfg.height);
-		m_ctx->log(RC_LOG_PROGRESS, " - %.1fK verts, %.1fK tris", nverts / 1000.0f, ntris / 1000.0f);
+		//m_ctx->log(RC_LOG_PROGRESS, " - %.1fK verts, %.1fK tris", nverts / 1000.0f, ntris / 1000.0f);
+		m_ctx->log(RC_LOG_PROGRESS, " - %d verts, %d tris", nverts, ntris);
 
 		//
 		// Step 2. Rasterize input polygon soup.
@@ -97,6 +99,20 @@ namespace Stone
 			return false;
 		}
 
+		spansToScene();
 		return true;
+	}
+	void NavMeshSample::spansToScene()
+	{
+		int spancount = 0;
+		for (size_t i = 0; i < m_cfg.width; i++)
+		{
+			for (size_t j = 0; j < m_cfg.height; j++)
+			{
+				spancount++;
+			}
+		}
+
+		LOG_DEBUG("spancount: {0}", spancount);
 	}
 }
