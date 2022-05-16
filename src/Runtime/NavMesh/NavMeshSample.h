@@ -7,6 +7,8 @@
 #include <Resource/Data/Implement/VCG/VCGMesh.h>
 
 #include "NavGeoMesh.h"
+
+#include <glm/glm.hpp>
 namespace Stone
 {
 	class NavMeshSample : PublicSingleton<NavMeshSample>
@@ -19,6 +21,8 @@ namespace Stone
 
 	private:
 		void spansToScene();
+
+		void addSpanBox(glm::vec3 position, size_t cs, int min, int max);
 
 		NavGeoMesh* m_Mesh = nullptr;
 		rcHeightfield* m_solid;

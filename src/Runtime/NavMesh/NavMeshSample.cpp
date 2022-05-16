@@ -1,6 +1,14 @@
 #include "NavMeshSample.h"
 #include <Core/Base/macro.h>
 #include <glm/glm.hpp>
+
+#include <Function/Scene/Scene.h>
+
+#include <Resource/Components/Transform.h>
+
+#include <Resource/Components/Mesh.h>
+
+#include <vcg/complex/algorithms/create/platonic.h>
 namespace Stone
 {
 	NavMeshSample::NavMeshSample()
@@ -100,6 +108,9 @@ namespace Stone
 		}
 
 		spansToScene();
+
+		addSpanBox({ 0, 0,0 }, 10, 0, 10);
+
 		return true;
 	}
 	void NavMeshSample::spansToScene()
@@ -114,5 +125,22 @@ namespace Stone
 		}
 
 		LOG_DEBUG("spancount: {0}", spancount);
+	}
+	void NavMeshSample::addSpanBox(glm::vec3 position, size_t cs, int min, int max)
+	{
+		int height = max - min;
+		auto span = PublicSingleton<Scene>::getInstance().CreateObject("span");
+		TransformComponent& transform = span.AddComponent<TransformComponent>();
+		transform.Translation = (position + glm::vec3(0, height/2 + min, 0));
+		transform.Scale.x = (cs / 2.0f);
+		transform.Scale.y = (height / 2.0f);
+		transform.Scale.z = (cs / 2.0f);
+		VCGMesh* cube = new VCGMesh();
+		vcg::tri::Hexahedron<BaseTriMesh>(cube->m_Mesh);
+
+		cube->update();
+
+		auto meshcomponent = span.AddComponent<MeshComponent<VCGMesh>>(cube);
+		
 	}
 }
